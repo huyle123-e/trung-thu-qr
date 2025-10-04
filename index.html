@@ -5,19 +5,48 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Trang mật khẩu → Trung Thu (video fullscreen) → Lời chúc</title>
   <style>
-    :root{--bg:#fff8d3;--card:#0b1220;--accent:#06b6d4;--muted:#3b3b3b;--glass:rgba(255,255,255,0.04);--holo:#ffd54f}
+    :root{
+      --bg:#fff8d3;
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --muted:#3b3b3b;
+      --holo:#ffd54f;
+    }
     *{box-sizing:border-box}
-    html,body{height:100%;}
+    html,body{height:100%}
     body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:linear-gradient(180deg,#fff8d3 0%, #ffd366 100%);color:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:0}
 
-    /* Card sized for landscape phones; video will fill it */
+    /* Card */
     .card{width:min(96vw,1200px);height:min(86vh,860px);background:var(--card);padding:12px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.7);color:#e6eef6;display:flex;flex-direction:column;gap:8px;position:relative}
 
     .page{position:relative;flex:1;display:flex;flex-direction:column}
     .page.hidden{display:none}
 
-    .pw-holo{position:relative;border-radius:12px;padding:18px;background:linear-gradient(135deg, rgba(255,230,120,0.08), rgba(255,200,60,0.06));box-shadow:0 6px 20px rgba(255,200,60,0.06) inset;border:1px solid rgba(255,210,90,0.08);flex:1;display:flex;flex-direction:column;justify-content:center}
-    .pw-holo .title{color: var(--holo); font-weight:700; margin-bottom:8px; text-shadow:0 2px 8px rgba(255,210,90,0.45)}
+    /* ===== Page 1 (password) - background image ===== */
+    .pw-holo{
+      position:relative;
+      border-radius:12px;
+      padding:18px;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      overflow:hidden;
+      color:#fff8e6;
+      text-shadow:0 2px 8px rgba(0,0,0,0.6);
+
+      /* ưu tiên load ảnh online; fallback sang file local nếu cần */
+      background-image:
+        linear-gradient(135deg, rgba(11,18,32,0.45), rgba(11,18,32,0.25)),
+        url('https://png.pngtree.com/background/20210714/original/pngtree-mid-autumn-festival-green-classical-background-picture-image_1219098.jpg'),
+        url('/mnt/data/42d5c248-2d52-459a-bafb-91cad863fe87.png');
+      background-size: cover, cover, cover;
+      background-position: center, center, center;
+      background-repeat: no-repeat;
+      box-shadow:0 6px 20px rgba(0,0,0,0.45) inset;
+      border:1px solid rgba(255,210,90,0.04);
+    }
+    .pw-holo .title{color:var(--holo);font-weight:700;margin-bottom:8px}
 
     input[type="password"]{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:inherit;margin-bottom:12px}
     button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#7c3aed);color:#001021;font-weight:600;cursor:pointer}
@@ -25,22 +54,87 @@
     .row{display:flex;gap:10px}
 
     /* rotation overlay */
-    #rotateOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);color:#fff;display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;flex-direction:column;gap:12px; text-align:center}
+    #rotateOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);color:#fff;display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;flex-direction:column;gap:12px;text-align:center}
     #rotateOverlay.hidden{display:none}
     @media (min-width:900px){ #rotateOverlay{display:none} }
 
-    /* Video area: make iframe/player fill the .card area for an immersive look */
+    /* Video area */
     .video-full{flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;overflow:hidden;background:#000}
     .video-full iframe, .video-full > div{width:100%;height:100%;border:0}
 
-    /* Continue button centered above video */
+    /* Continue button */
     #nextBtnContainer{position:absolute;left:50%;transform:translateX(-50%);bottom:26px;z-index:40}
     #nextBtnContainer.hidden{display:none}
 
-    /* Greeting page larger text, centered */
-    .greeting{font-size:34px;text-align:center;padding:36px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;flex-direction:column;height:100%}
-    .greeting h1{font-size:48px;margin:0}
+    /* ===== Page 3 (greeting) ===== */
+    /* background for greeting: use the URL you provided, fallback none */
+    .page#page-greeting{
+      background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06)),
+        url('https://upload.urbox.vn/strapi-mobile/medium_tet_trung_thu_feature_image_1_bc298a6819_50e2ccb958_96563ba48a.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius:12px;
+      overflow:hidden;
+      padding:18px;
+    }
 
+    .greeting{
+  font-size:34px;
+  text-align:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  height:100%;
+  position:relative;
+  overflow:visible;
+}
+
+/* khung chứa chữ riêng */
+.greeting-content{
+  padding:36px 28px;
+  border-radius:14px;
+  background:rgba(0,0,0,0.45); /* nền mờ */
+  backdrop-filter: blur(6px);
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+  max-width:80%;
+}
+
+.greeting-content h1{
+  font-size:48px;
+  margin:0;
+  color:#fff;
+  text-shadow:0 4px 18px rgba(0,0,0,0.6);
+}
+
+.greeting-content p{
+  margin-top:18px;
+  font-size:16px;
+  color:rgba(255,255,255,0.9);
+}
+
+   
+
+    /* lanterns flying using your transparent lantern image */
+    .lanterns{pointer-events:none;position:absolute;inset:0;z-index:56;overflow:hidden}
+    .lantern{position:absolute;bottom:-30%;width:88px;height:auto;opacity:0;will-change:transform,opacity;transform-origin:center bottom;background-repeat:no-repeat;background-size:contain;background-position:center}
+    .lantern.v1{animation:lanternUp 9.6s linear infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.35));}
+    .lantern.v2{animation:lanternUp 11.4s linear infinite;filter:drop-shadow(0 12px 24px rgba(0,0,0,0.32));}
+    .lantern.v3{animation:lanternUp 10.2s linear infinite;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.28));}
+    .lantern.v4{animation:lanternUp 12.2s linear infinite;filter:drop-shadow(0 9px 20px rgba(0,0,0,0.30));}
+    .lantern.v5{animation:lanternUp 10.8s linear infinite;filter:drop-shadow(0 11px 22px rgba(0,0,0,0.34));}
+
+    @keyframes lanternUp{
+      0%   { transform: translateX(0) translateY(0) rotate(-6deg) scale(var(--s,1)); opacity:0; }
+      6%   { opacity:1; }
+      30%  { transform: translateX(var(--dx, 0px)) translateY(-30vh) rotate(6deg) scale(calc(var(--s,1)*1.03)); opacity:0.95; }
+      60%  { transform: translateX(calc(var(--dx, 0px) * 1.15)) translateY(-62vh) rotate(-8deg) scale(calc(var(--s,1)*0.98)); opacity:0.7; filter:blur(0.6px); }
+      100% { transform: translateX(calc(var(--dx, 0px) * 1.3)) translateY(-120vh) rotate(-10deg) scale(var(--s,1)); opacity:0; }
+    }
+
+    @media (max-width:720px){ .lion{width:160px;bottom:3%} .lantern{width:56px} }
     @media (max-width:520px){ .card{height:92vh} }
   </style>
 </head>
@@ -62,13 +156,13 @@
     <!-- Page 1: password -->
     <div id="page-password" class="page pw-holo">
       <div class="title">Nhập mật khẩu để bắt đầu</div>
-      <p class="muted">Nhập mật khẩu đúng.</p>
+      <p class="muted" style="color:rgba(255,255,255,0.9)">Nhập mật khẩu đúng.</p>
       <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
       <div class="row" style="margin-top:6px">
         <button id="btnEnter">Bắt đầu</button>
         <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
       </div>
-      <p id="pwMsg" class="muted" style="margin-top:10px"></p>
+      <p id="pwMsg" class="muted" style="margin-top:10px;color:rgba(255,255,255,0.85)"></p>
     </div>
 
     <!-- Page 2: video fullscreen inside card -->
@@ -86,11 +180,17 @@
     </div>
 
     <!-- Page 3: greeting -->
+    <!-- note: background for this page set via CSS above (your provided URL) -->
     <div id="page-greeting" class="page hidden">
+      <!-- lanterns -->
+      <div class="lanterns" id="lanterns"></div>
+
       <div class="greeting">
-        <h1>🌕✨ Chúc bạn Trung Thu vui vẻ! ✨🌕</h1>
-        <p class="muted" id="autoReturnNotice" style="margin-top:18px;font-size:16px">Trang sẽ tự trở về sau 30 giây.</p>
-      </div>
+  <div class="greeting-content">
+    <h1>🌕✨ Chúc bạn Trung Thu vui vẻ! ✨🌕</h1>
+    
+  </div>
+</div>
     </div>
 
   </div>
@@ -118,8 +218,10 @@
     const nextBtnContainer = document.getElementById('nextBtnContainer');
     const btnNext = document.getElementById('btnNext');
     const btnBackToPw = document.getElementById('btnBackToPw');
-    const btnStartOver = document.getElementById('btnStartOver');
     const mainCard = document.getElementById('mainCard');
+
+    // lantern local transparent PNG (uploaded to container)
+    const LANTERN_SRC = '/mnt/data/image-removebg-preview.png';
 
     let player = null;
     let checkInterval = null;
@@ -142,7 +244,6 @@
 
     // --- YouTube player setup ---
     function onYouTubeIframeAPIReady(){
-      // create player but do not autoplay until user enters password (user gesture)
       player = new YT.Player('player', {
         height: '100%', width: '100%', videoId: VIDEO_ID,
         playerVars: { 'playsinline': 1, 'rel': 0, 'showinfo': 0 },
@@ -152,51 +253,27 @@
         }
       });
     }
-
-    function onPlayerReady(event){
-      // nothing yet; we'll call playVideo after user enters password
-    }
-
+    function onPlayerReady(event){ /* nothing yet */ }
     function onPlayerStateChange(e){
-      // when video ends, we can show button as fallback
       if(e.data === YT.PlayerState.ENDED){ showContinueButton(); }
     }
 
     function startAndMonitorVideo(){
       if(!player) return;
-      // try to play (user gesture from button click should allow)
       try{ player.playVideo(); }catch(e){ console.warn('playVideo failed', e); }
-
-      // try request fullscreen on the card (user gesture allowed because called from click handler)
       requestFullscreenFor(mainCard);
-
-      // start interval to check progress and show continue button when >= 2/3
       clearInterval(checkInterval);
       checkInterval = setInterval(()=>{
         try{
           const dur = player.getDuration();
           const cur = player.getCurrentTime();
           if(dur > 0 && cur/dur >= NEXT_DELAY_RATIO){ showContinueButton(); }
-        }catch(e){ /* ignore while loading */ }
+        }catch(e){ }
       }, 500);
     }
+    function showContinueButton(){ nextBtnContainer.classList.remove('hidden'); if(checkInterval) clearInterval(checkInterval); }
+    function stopAndCleanupVideo(){ try{ if(player && player.stopVideo) player.stopVideo(); }catch(e){} if(checkInterval) clearInterval(checkInterval); nextBtnContainer.classList.add('hidden'); exitFullscreenIfAny(); }
 
-    function showContinueButton(){
-      nextBtnContainer.classList.remove('hidden');
-      // stop checking
-      if(checkInterval) clearInterval(checkInterval);
-    }
-
-    function stopAndCleanupVideo(){
-      // stop video and clear interval
-      try{ if(player && player.stopVideo) player.stopVideo(); }catch(e){}
-      if(checkInterval) clearInterval(checkInterval);
-      nextBtnContainer.classList.add('hidden');
-      // exit fullscreen if we're in it
-      exitFullscreenIfAny();
-    }
-
-    // Fullscreen helpers
     async function requestFullscreenFor(el){
       try{
         if(el.requestFullscreen) await el.requestFullscreen();
@@ -216,7 +293,6 @@
       if(val === PASSWORD){
         checkOrientationAndPrompt();
         showPage('video');
-        // start playback + fullscreen + monitor progress
         startAndMonitorVideo();
       } else { pwMsg.textContent='Mật khẩu không đúng — thử lại.'; }
     });
@@ -226,6 +302,7 @@
       if(name==='pw') pagePw.classList.remove('hidden');
       if(name==='video') pageVideo.classList.remove('hidden');
       if(name==='greeting') pageGreeting.classList.remove('hidden');
+      if(name==='greeting') prepareGreetingVisuals();
     }
 
     btnNext.addEventListener('click', ()=>{ stopAndCleanupVideo(); showGreeting(); });
@@ -240,8 +317,47 @@
     }
     function clearAutoReturn(){ if(autoReturnTimeout) clearTimeout(autoReturnTimeout); }
 
+    // ===== Lanterns & greeting visuals =====
+    function createLanterns(count = 7){
+      const container = document.getElementById('lanterns');
+      if(!container) return;
+      container.innerHTML = '';
+      for (let i=0;i<count;i++){
+        const el = document.createElement('div');
+        el.className = 'lantern v' + ((i%5)+1);
+        const left = 6 + Math.random()*88;
+        el.style.left = `${left}%`;
+        const dx = (Math.random()*160 - 80).toFixed(1) + 'px';
+        el.style.setProperty('--dx', dx);
+        const s = (0.8 + Math.random()*0.6).toFixed(2);
+        el.style.setProperty('--s', s);
+        el.style.animationDelay = (Math.random()*-10).toFixed(2) + 's';
+        el.style.backgroundImage = `url("${LANTERN_SRC}")`;
+        container.appendChild(el);
+      }
+    }
+    function ensureLanternsCreated(){ if(document.getElementById('lanterns') && !document.getElementById('lanterns').children.length) createLanterns(8); }
+
+    function prepareGreetingVisuals(){
+      ensureLanternsCreated();
+      // small glow pulse for lanterns
+      const lanterns = document.querySelectorAll('.lantern');
+      lanterns.forEach((l,idx)=>{
+        l.style.transition = 'filter 0.6s ease';
+        setTimeout(()=> l.style.filter = 'drop-shadow(0 16px 36px rgba(255,160,50,0.35))', 300 + idx*80);
+        setTimeout(()=> l.style.filter = '', 2600 + idx*40);
+      });
+      // lions are local images; they should be visible directly
+    }
+
     // init
-    checkOrientationAndPrompt(); setupGestureLock(); window.addEventListener('orientationchange', checkOrientationAndPrompt); window.addEventListener('resize', checkOrientationAndPrompt);
+    checkOrientationAndPrompt();
+    setupGestureLock();
+    window.addEventListener('orientationchange', checkOrientationAndPrompt);
+    window.addEventListener('resize', checkOrientationAndPrompt);
+
+    // show first page
+    showPage('pw');
   </script>
 </body>
 </html>
