@@ -49,57 +49,7 @@
   <div id="rotateOverlay" class="hidden" role="dialog" aria-modal="true">
     <div class="box">
       <h2>Xoay màn hình sang ngang để trải nghiệm tốt hơn</h2>
-      <p>Để video hiển thị đúng tỉ lệ ngang và toàn màn hình, hãy xoay thiết bị sang chế độ ngang (landscape).</p>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
-        <button id="tryLockBtn" class="rotateBtn">Thử khóa ngang</button>
-        <button id="dismissRotate" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 12px;border-radius:10px">Đã hiểu</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card" id="mainCard">
-
-    <!-- Page 1: password -->
-    <div id="page-password" class="page pw-holo">
-      <div class="title">Nhập mật khẩu để bắt đầu</div>
-      <p class="muted">Nhập mật khẩu đúng sẽ dẫn tới video Trung Thu. (Mật khẩu mặc định: <strong>1234</strong>)</p>
-      <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
-      <div class="row" style="margin-top:6px">
-        <button id="btnEnter">Bắt đầu</button>
-        <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
-      </div>
-      <p id="pwMsg" class="muted" style="margin-top:10px"></p>
-    </div>
-
-    <!-- Page 2: video fullscreen inside card -->
-    <div id="page-video" class="page hidden" style="position:relative">
-      <div class="video-full" id="videoFull">
-        <!-- YouTube player will be injected here by API -->
-        <div id="player"></div>
-      </div>
-
-      <div id="nextBtnContainer" class="hidden">
-        <button id="btnNext">Tiếp tục</button>
-      </div>
-
-      <div style="position:absolute;right:12px;top:12px;z-index:50"><button id="btnBackToPw" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Quay lại</button></div>
-    </div>
-
-    <!-- Page 3: greeting -->
-    <div id="page-greeting" class="page hidden">
-      <div class="greeting">
-        <h1>🌕✨ Chúc bạn Trung Thu vui vẻ! ✨🌕</h1>
-        <p class="muted" id="autoReturnNotice" style="margin-top:18px;font-size:16px">Trang sẽ tự trở về sau 30 giây.</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script>
-    // CONFIG
-    const PASSWORD = 'tam1234';
+      <p>Để video hiển thị đúng tỉ lệ ngang và toàn màn hình, hãy xoay thiết bị sang chế độ ngang (landscape).<11223344';
     const VIDEO_ID = 'gL5pDe7cqco';
     const NEXT_DELAY_RATIO = 2/3; // show button after 2/3 of video
     const AUTO_RETURN_MS = 30000;
@@ -244,4 +194,5 @@
     checkOrientationAndPrompt(); setupGestureLock(); window.addEventListener('orientationchange', checkOrientationAndPrompt); window.addEventListener('resize', checkOrientationAndPrompt);
   </script>
 </body>
+
 </html>
