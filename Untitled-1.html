@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Trang mật khẩu → Trung Thu (video fullscreen) → Lời chúc</title>
+  <style>
+    :root{--bg:#fff8d3;--card:#0b1220;--accent:#06b6d4;--muted:#3b3b3b;--glass:rgba(255,255,255,0.04);--holo:#ffd54f}
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{margin:0;font-family:Inter, system-ui, Arial, sans-serif;background:linear-gradient(180deg,#fff8d3 0%, #ffd366 100%);color:#1a1a1a;display:flex;align-items:center;justify-content:center;padding:0}
+
+    /* Card sized for landscape phones; video will fill it */
+    .card{width:min(96vw,1200px);height:min(86vh,860px);background:var(--card);padding:12px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.7);color:#e6eef6;display:flex;flex-direction:column;gap:8px;position:relative}
+
+    .page{position:relative;flex:1;display:flex;flex-direction:column}
+    .page.hidden{display:none}
+
+    .pw-holo{position:relative;border-radius:12px;padding:18px;background:linear-gradient(135deg, rgba(255,230,120,0.08), rgba(255,200,60,0.06));box-shadow:0 6px 20px rgba(255,200,60,0.06) inset;border:1px solid rgba(255,210,90,0.08);flex:1;display:flex;flex-direction:column;justify-content:center}
+    .pw-holo .title{color: var(--holo); font-weight:700; margin-bottom:8px; text-shadow:0 2px 8px rgba(255,210,90,0.45)}
+
+    input[type="password"]{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:inherit;margin-bottom:12px}
+    button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#7c3aed);color:#001021;font-weight:600;cursor:pointer}
+    .muted{color:var(--muted);font-size:14px}
+    .row{display:flex;gap:10px}
+
+    /* rotation overlay */
+    #rotateOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);color:#fff;display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;flex-direction:column;gap:12px; text-align:center}
+    #rotateOverlay.hidden{display:none}
+    @media (min-width:900px){ #rotateOverlay{display:none} }
+
+    /* Video area: make iframe/player fill the .card area for an immersive look */
+    .video-full{flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;overflow:hidden;background:#000}
+    .video-full iframe, .video-full > div{width:100%;height:100%;border:0}
+
+    /* Continue button centered above video */
+    #nextBtnContainer{position:absolute;left:50%;transform:translateX(-50%);bottom:26px;z-index:40}
+    #nextBtnContainer.hidden{display:none}
+
+    /* Greeting page larger text, centered */
+    .greeting{font-size:34px;text-align:center;padding:36px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center;flex-direction:column;height:100%}
+    .greeting h1{font-size:48px;margin:0}
+
+    @media (max-width:520px){ .card{height:92vh} }
+  </style>
+</head>
+<body>
+
+  <div id="rotateOverlay" class="hidden" role="dialog" aria-modal="true">
+    <div class="box">
+      <h2>Xoay màn hình sang ngang để trải nghiệm tốt hơn</h2>
+      <p>Để video hiển thị đúng tỉ lệ ngang và toàn màn hình, hãy xoay thiết bị sang chế độ ngang (landscape).</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:10px">
+        <button id="tryLockBtn" class="rotateBtn">Thử khóa ngang</button>
+        <button id="dismissRotate" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 12px;border-radius:10px">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="mainCard">
+
+    <!-- Page 1: password -->
+    <div id="page-password" class="page pw-holo">
+      <div class="title">Nhập mật khẩu để bắt đầu</div>
+      <p class="muted">Nhập mật khẩu đúng sẽ dẫn tới video Trung Thu. (Mật khẩu mặc định: <strong>1234</strong>)</p>
+      <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
+      <div class="row" style="margin-top:6px">
+        <button id="btnEnter">Bắt đầu</button>
+        <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
+      </div>
+      <p id="pwMsg" class="muted" style="margin-top:10px"></p>
+    </div>
+
+    <!-- Page 2: video fullscreen inside card -->
+    <div id="page-video" class="page hidden" style="position:relative">
+      <div class="video-full" id="videoFull">
+        <!-- YouTube player will be injected here by API -->
+        <div id="player"></div>
+      </div>
+
+      <div id="nextBtnContainer" class="hidden">
+        <button id="btnNext">Tiếp tục</button>
+      </div>
+
+      <div style="position:absolute;right:12px;top:12px;z-index:50"><button id="btnBackToPw" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Quay lại</button></div>
+    </div>
+
+    <!-- Page 3: greeting -->
+    <div id="page-greeting" class="page hidden">
+      <div class="greeting">
+        <h1>🌕✨ Chúc bạn Trung Thu vui vẻ! ✨🌕</h1>
+        <p class="muted" id="autoReturnNotice" style="margin-top:18px;font-size:16px">Trang sẽ tự trở về sau 30 giây.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    // CONFIG
+    const PASSWORD = '1234';
+    const VIDEO_ID = 'gL5pDe7cqco';
+    const NEXT_DELAY_RATIO = 2/3; // show button after 2/3 of video
+    const AUTO_RETURN_MS = 30000;
+
+    // Elements
+    const rotateOverlay = document.getElementById('rotateOverlay');
+    const tryLockBtn = document.getElementById('tryLockBtn');
+    const dismissRotate = document.getElementById('dismissRotate');
+    const pagePw = document.getElementById('page-password');
+    const pageVideo = document.getElementById('page-video');
+    const pageGreeting = document.getElementById('page-greeting');
+    const pwInput = document.getElementById('pw');
+    const btnEnter = document.getElementById('btnEnter');
+    const btnHint = document.getElementById('btnHint');
+    const pwMsg = document.getElementById('pwMsg');
+    const nextBtnContainer = document.getElementById('nextBtnContainer');
+    const btnNext = document.getElementById('btnNext');
+    const btnBackToPw = document.getElementById('btnBackToPw');
+    const btnStartOver = document.getElementById('btnStartOver');
+    const mainCard = document.getElementById('mainCard');
+
+    let player = null;
+    let checkInterval = null;
+    let autoReturnTimeout = null;
+
+    // Orientation helpers
+    function checkOrientationAndPrompt(){
+      const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+      const narrow = window.matchMedia('(max-width:900px)').matches;
+      if(isPortrait && narrow){ rotateOverlay.classList.remove('hidden'); } else { rotateOverlay.classList.add('hidden'); }
+    }
+    async function tryLockLandscape(){
+      try { if(screen.orientation && screen.orientation.lock){ await screen.orientation.lock('landscape'); rotateOverlay.classList.add('hidden'); return true; } }
+      catch(e){ console.warn('Không thể khóa hướng:', e); }
+      return false;
+    }
+    dismissRotate.addEventListener('click', ()=>{ rotateOverlay.classList.add('hidden'); });
+    tryLockBtn.addEventListener('click', async ()=>{ const ok = await tryLockLandscape(); if(!ok) alert('Trình duyệt không cho phép khóa hướng — xoay thiết bị thủ công.'); });
+    function setupGestureLock(){ const gesture = ()=>{ tryLockLandscape(); window.removeEventListener('touchstart', gesture); window.removeEventListener('click', gesture); }; window.addEventListener('touchstart', gesture, {passive:true}); window.addEventListener('click', gesture); }
+
+    // --- YouTube player setup ---
+    function onYouTubeIframeAPIReady(){
+      // create player but do not autoplay until user enters password (user gesture)
+      player = new YT.Player('player', {
+        height: '100%', width: '100%', videoId: VIDEO_ID,
+        playerVars: { 'playsinline': 1, 'rel': 0, 'showinfo': 0 },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady(event){
+      // nothing yet; we'll call playVideo after user enters password
+    }
+
+    function onPlayerStateChange(e){
+      // when video ends, we can show button as fallback
+      if(e.data === YT.PlayerState.ENDED){ showContinueButton(); }
+    }
+
+    function startAndMonitorVideo(){
+      if(!player) return;
+      // try to play (user gesture from button click should allow)
+      try{ player.playVideo(); }catch(e){ console.warn('playVideo failed', e); }
+
+      // try request fullscreen on the card (user gesture allowed because called from click handler)
+      requestFullscreenFor(mainCard);
+
+      // start interval to check progress and show continue button when >= 2/3
+      clearInterval(checkInterval);
+      checkInterval = setInterval(()=>{
+        try{
+          const dur = player.getDuration();
+          const cur = player.getCurrentTime();
+          if(dur > 0 && cur/dur >= NEXT_DELAY_RATIO){ showContinueButton(); }
+        }catch(e){ /* ignore while loading */ }
+      }, 500);
+    }
+
+    function showContinueButton(){
+      nextBtnContainer.classList.remove('hidden');
+      // stop checking
+      if(checkInterval) clearInterval(checkInterval);
+    }
+
+    function stopAndCleanupVideo(){
+      // stop video and clear interval
+      try{ if(player && player.stopVideo) player.stopVideo(); }catch(e){}
+      if(checkInterval) clearInterval(checkInterval);
+      nextBtnContainer.classList.add('hidden');
+      // exit fullscreen if we're in it
+      exitFullscreenIfAny();
+    }
+
+    // Fullscreen helpers
+    async function requestFullscreenFor(el){
+      try{
+        if(el.requestFullscreen) await el.requestFullscreen();
+        else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        else if(el.msRequestFullscreen) el.msRequestFullscreen();
+      }catch(e){ console.warn('Fullscreen request failed', e); }
+    }
+    async function exitFullscreenIfAny(){
+      try{ if(document.fullscreenElement) await document.exitFullscreen(); }
+      catch(e){ /* ignore */ }
+    }
+
+    // Page flow
+    btnEnter.addEventListener('click', ()=>{
+      const val = pwInput.value.trim();
+      if(!val){ pwMsg.textContent='Vui lòng nhập mật khẩu.'; return; }
+      if(val === PASSWORD){
+        checkOrientationAndPrompt();
+        showPage('video');
+        // start playback + fullscreen + monitor progress
+        startAndMonitorVideo();
+      } else { pwMsg.textContent='Mật khẩu không đúng — thử lại.'; }
+    });
+
+    function showPage(name){
+      pagePw.classList.add('hidden'); pageVideo.classList.add('hidden'); pageGreeting.classList.add('hidden');
+      if(name==='pw') pagePw.classList.remove('hidden');
+      if(name==='video') pageVideo.classList.remove('hidden');
+      if(name==='greeting') pageGreeting.classList.remove('hidden');
+    }
+
+    btnNext.addEventListener('click', ()=>{ stopAndCleanupVideo(); showGreeting(); });
+    btnBackToPw.addEventListener('click', ()=>{ stopAndCleanupVideo(); showPage('pw'); pwInput.value=''; pwMsg.textContent=''; clearAutoReturn(); });
+
+    function showGreeting(){
+      showPage('greeting');
+      clearAutoReturn();
+      autoReturnTimeout = setTimeout(()=>{ showPage('pw'); pwInput.value=''; pwMsg.textContent=''; }, AUTO_RETURN_MS);
+      let remaining = AUTO_RETURN_MS/1000; const notice = document.getElementById('autoReturnNotice'); notice.textContent = `Trang sẽ tự trở về sau ${remaining} giây.`;
+      const countdown = setInterval(()=>{ remaining--; if(remaining<=0){ clearInterval(countdown); notice.textContent = 'Đã trở về trang đầu.'; return } notice.textContent = `Trang sẽ tự trở về sau ${remaining} giây.`; },1000);
+    }
+    function clearAutoReturn(){ if(autoReturnTimeout) clearTimeout(autoReturnTimeout); }
+
+    // init
+    checkOrientationAndPrompt(); setupGestureLock(); window.addEventListener('orientationchange', checkOrientationAndPrompt); window.addEventListener('resize', checkOrientationAndPrompt);
+  </script>
+</body>
+</html>
