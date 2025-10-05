@@ -245,9 +245,48 @@
     // localStorage key
     const STORAGE_KEY = 'trungthu_visitors_v1';
 
-    // SVG lantern data URI (shortened body for brevity — full earlier svg also works)
-    const LANTERN_SRC = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"> ... </svg>
+   const LANTERN_SRC = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300">
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#fff7c6" stop-opacity="0.95"/>
+      <stop offset="0.25" stop-color="#ffd36a"/>
+      <stop offset="0.7" stop-color="#ff8a3d"/>
+      <stop offset="1" stop-color="#d94b2a"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- main body -->
+  <g filter="url(#glow)">
+    <ellipse cx="100" cy="120" rx="62" ry="86" fill="url(#g)"/>
+    <path d="M38 120 C38 80, 62 40, 100 40 C138 40, 162 80, 162 120 C162 160, 138 200, 100 200 C62 200, 38 160, 38 120 Z"
+          fill="url(#g)" opacity="0.95"/>
+    <!-- ribs -->
+    <g stroke="#00000022" stroke-width="2" opacity="0.12">
+      <path d="M100 30 L100 210"/>
+      <path d="M78 36 L78 204"/>
+      <path d="M122 36 L122 204"/>
+      <path d="M56 56 L56 184"/>
+      <path d="M144 56 L144 184"/>
+    </g>
+
+    <!-- top cap -->
+    <rect x="80" y="14" width="40" height="12" rx="6" fill="#2f1f12" opacity="0.95"/>
+    <!-- handle -->
+    <path d="M90 14 C86 6, 114 6, 110 14" fill="none" stroke="#2f1f12" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- tassel -->
+    <g transform="translate(100,205)">
+      <rect x="-6" y="0" width="12" height="18" rx="3" fill="#2f1f12" opacity="0.9"/>
+      <path d="M-6 18 C-10 36, -2 48, -2 62" stroke="#2f1f12" stroke-width="2" fill="none"/>
+      <path d="M6 18 C10 36, 2 48, 2 62" stroke="#2f1f12" stroke-width="2" fill="none"/>
+    </g>
+  </g>
+</svg>
     `);
 
     // ---------- Elements ----------
@@ -555,5 +594,6 @@ function addVisitor(name, result){
   </script>
 </body>
 </html>
+
 
 
