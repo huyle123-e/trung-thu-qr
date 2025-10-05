@@ -114,7 +114,28 @@
   font-size:16px;
   color:rgba(255,255,255,0.9);
 }
-
+/* khung chứa nội dung mật khẩu */
+.pw-box{
+  margin:auto; /* giúp căn giữa trong flex */
+  padding:28px 24px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.45); /* nền mờ tách khỏi ảnh */
+  backdrop-filter:blur(6px);
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+  max-width:400px;
+  text-align:center;
+}
+.pw-box .title{
+  font-size:22px;
+  font-weight:700;
+  color:var(--holo);
+  margin-bottom:14px;
+}
+.pw-box input, 
+.pw-box button, 
+.pw-box p{
+  text-align:center;
+}
    
 
     /* lanterns flying using your transparent lantern image */
@@ -153,17 +174,19 @@
 
   <div class="card" id="mainCard">
 
-    <!-- Page 1: password -->
-    <div id="page-password" class="page pw-holo">
-      <div class="title">Nhập mật khẩu để bắt đầu</div>
-      <p class="muted" style="color:rgba(255,255,255,0.9)">Nhập mật khẩu đúng.</p>
-      <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
-      <div class="row" style="margin-top:6px">
-        <button id="btnEnter">Bắt đầu</button>
-        <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
-      </div>
-      <p id="pwMsg" class="muted" style="margin-top:10px;color:rgba(255,255,255,0.85)"></p>
+   <!-- Page 1: password -->
+<div id="page-password" class="page pw-holo">
+  <div class="pw-box">
+    <div class="title">Nhập mật khẩu để bắt đầu</div>
+    <p class="muted" style="color:rgba(255,255,255,0.9)">Nhập mật khẩu đúng.</p>
+    <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
+    <div class="row" style="margin-top:6px;justify-content:center">
+      <button id="btnEnter">Bắt đầu</button>
+      <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
     </div>
+    <p id="pwMsg" class="muted" style="margin-top:10px;color:rgba(255,255,255,0.85)"></p>
+  </div>
+</div>
 
     <!-- Page 2: video fullscreen inside card -->
     <div id="page-video" class="page hidden" style="position:relative">
@@ -187,7 +210,7 @@
 
       <div class="greeting">
   <div class="greeting-content">
-    <h1>🌕✨ Chúc bạn Trung Thu vui vẻ! ✨🌕</h1>
+    <h1>🌕✨ Chúc bạn và gia đình Trung Thu vui vẻ! ✨🌕</h1>
     
   </div>
 </div>
@@ -228,11 +251,22 @@
     let autoReturnTimeout = null;
 
     // Orientation helpers
-    function checkOrientationAndPrompt(){
-      const isPortrait = window.matchMedia('(orientation: portrait)').matches;
-      const narrow = window.matchMedia('(max-width:900px)').matches;
-      if(isPortrait && narrow){ rotateOverlay.classList.remove('hidden'); } else { rotateOverlay.classList.add('hidden'); }
+   function checkOrientationAndPrompt(){
+  const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+  const narrow = window.matchMedia('(max-width:900px)').matches;
+
+  // chỉ hiển thị overlay ở trang 1 (password)
+  if(pagePw && !pagePw.classList.contains('hidden')){
+    if(isPortrait && narrow){ 
+      rotateOverlay.classList.remove('hidden'); 
+    } else { 
+      rotateOverlay.classList.add('hidden'); 
     }
+  } else {
+    rotateOverlay.classList.add('hidden'); // ẩn ở các trang khác
+  }
+}
+
     async function tryLockLandscape(){
       try { if(screen.orientation && screen.orientation.lock){ await screen.orientation.lock('landscape'); rotateOverlay.classList.add('hidden'); return true; } }
       catch(e){ console.warn('Không thể khóa hướng:', e); }
