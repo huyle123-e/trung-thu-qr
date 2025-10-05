@@ -328,43 +328,58 @@
     }
 
     // addVisitor: save local + send remote (with secret), mark synced on success
-    function addVisitor(name, result){
-      const list = loadVisitors();
-      const entry = {
-        name: name || '(không tên)',
-        time: new Date().toISOString(),
-        result,
-        ua: navigator.userAgent || '',
-        synced: false
-      };
-      list.unshift(entry);
-      saveVisitors(list);
-      renderVisitorTable();
+    // addVisitor: save local + send remote (with secret), mark synced on success
+function addVisitor(name, result){
+  const list = loadVisitors();
+  const entry = {
+    name: name || '(không tên)',
+    time: new Date().toISOString(),
+    result,
+    ua: navigator.userAgent || '',
+    synced: false
+  };
+  list.unshift(entry);
+  saveVisitors(list);
+  renderVisitorTable();
 
-      if(REMOTE_ENDPOINT && REMOTE_SECRET && REMOTE_SECRET !== 'REPLACE_WITH_YOUR_SECRET'){
-        const payload = { name: entry.name, result: entry.result, ua: entry.ua, secret: REMOTE_SECRET };
-        fetch(REMOTE_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-        .then(async res => {
-          if(!res.ok) throw new Error('HTTP ' + res.status);
-          const j = await res.json().catch(()=>null);
-          if(j && j.status && j.status.toLowerCase() === 'ok'){
-            const cur = loadVisitors();
-            const idx = cur.findIndex(it => it.time === entry.time && it.name === entry.name);
-            if(idx !== -1){ cur[idx].synced = true; saveVisitors(cur); renderVisitorTable(); }
-          } else {
-            console.warn('Remote save responded but not OK', j);
-          }
-        })
-        .catch(err => {
-          console.warn('Remote save failed', err);
-          // keep local entry; will retry on load
-        });
+  // Gửi remote nếu có cấu hình
+  if (REMOTE_ENDPOINT && REMOTE_SECRET && REMOTE_SECRET !== 'REPLACE_WITH_YOUR_SECRET') {
+    const payload = { 
+      secret: REMOTE_SECRET,   // ✅ bắt buộc có secret
+      name: entry.name, 
+      result: entry.result, 
+      ua: entry.ua 
+    };
+
+    fetch(REMOTE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(async res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const j = await res.json().catch(()=>null);
+
+      if (j && j.status && j.status.toLowerCase() === 'ok') {
+        // Đánh dấu entry đã đồng bộ
+        const cur = loadVisitors();
+        const idx = cur.findIndex(it => it.time === entry.time && it.name === entry.name);
+        if (idx !== -1) {
+          cur[idx].synced = true;
+          saveVisitors(cur);
+          renderVisitorTable();
+        }
+      } else {
+        console.warn('Remote save responded but not OK', j);
       }
-    }
+    })
+    .catch(err => {
+      console.warn('Remote save failed', err);
+      // Giữ lại local, sẽ retry khi load lại
+    });
+  }
+}
+
 
     // retry unsynced entries on load (sequential)
     function retryUnsynced(){
@@ -540,3 +555,4 @@
   </script>
 </body>
 </html>
+
