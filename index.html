@@ -54,7 +54,7 @@
       background:rgba(0,0,0,0.45); /* nền mờ tách khỏi ảnh */
       backdrop-filter:blur(6px);
       box-shadow:0 6px 18px rgba(0,0,0,0.35);
-      max-width:420px;
+      max-width:520px;
       text-align:center;
     }
     .pw-box .title{
@@ -64,10 +64,26 @@
       margin-bottom:14px;
     }
 
-    input[type="password"]{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:inherit;margin-bottom:12px}
+    input[type="password"], input[type="text"]{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:inherit;margin-bottom:12px}
     button{padding:10px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#7c3aed);color:#001021;font-weight:600;cursor:pointer}
     .muted{color:var(--muted);font-size:14px}
-    .row{display:flex;gap:10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+    /* small header buttons */
+    .header-actions{position:absolute;right:14px;top:12px;display:flex;gap:8px;z-index:100}
+    .small-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer}
+
+    /* modal for visitor list */
+    .modal{
+      position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,900px);max-height:80vh;overflow:auto;background:linear-gradient(180deg, rgba(11,18,32,0.98), rgba(11,18,32,0.96));border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,0.6);z-index:999;display:none;
+    }
+    .modal.open{display:block}
+    .modal h3{margin:0 0 10px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.04);text-align:left;font-size:14px;color:rgba(255,255,255,0.9)}
+    .status-ok{color:#7ef3a6;font-weight:600}
+    .status-wrong{color:#ff9a9a;font-weight:600}
+    .status-pending{color:#ffd56b;font-weight:600}
 
     /* rotation overlay */
     #rotateOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);color:#fff;display:flex;align-items:center;justify-content:center;z-index:60;padding:20px;flex-direction:column;gap:12px;text-align:center}
@@ -83,7 +99,6 @@
     #nextBtnContainer.hidden{display:none}
 
     /* ===== Page 3 (greeting) ===== */
-    /* background for greeting: use the URL you provided, fallback none */
     .page#page-greeting{
       background-image:
         linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06)),
@@ -109,7 +124,6 @@
       overflow:visible;
     }
 
-    /* khung chứa chữ riêng */
     .greeting-content{
       padding:36px 28px;
       border-radius:14px;
@@ -118,62 +132,17 @@
       box-shadow:0 6px 18px rgba(0,0,0,0.35);
       max-width:80%;
       position:relative;
-      z-index:10; /* ensure not behind card when lanterns shown on top */
+      z-index:10;
     }
 
-    .greeting-content h1{
-      font-size:48px;
-      margin:0;
-      color:#fff;
-      text-shadow:0 4px 18px rgba(0,0,0,0.6);
-    }
-
-    .greeting-content p{
-      margin-top:18px;
-      font-size:16px;
-      color:rgba(255,255,255,0.9);
-    }
-
-    /* lanterns flying using your transparent lantern image */
-    /* NOTE: height fallback included for browsers without aspect-ratio support */
     .lanterns{pointer-events:none;position:absolute;inset:0;z-index:999;overflow:hidden}
-    .lantern{
-      position:absolute;
-      bottom:-30%;
-      width:88px;
-      /* fallback fixed height */
-      height:132px;
-      /* modern browsers: maintain ratio automatically */
-      aspect-ratio: 2 / 3;
-      opacity:0;
-      will-change:transform,opacity;
-      transform-origin:center bottom;
-      background-repeat:no-repeat;
-      background-size:contain;
-      background-position:center;
-      pointer-events:none;
-    }
-    .lantern.v1{animation:lanternUp 9.6s linear infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.35));}
-    .lantern.v2{animation:lanternUp 11.4s linear infinite;filter:drop-shadow(0 12px 24px rgba(0,0,0,0.32));}
-    .lantern.v3{animation:lanternUp 10.2s linear infinite;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.28));}
-    .lantern.v4{animation:lanternUp 12.2s linear infinite;filter:drop-shadow(0 9px 20px rgba(0,0,0,0.30));}
-    .lantern.v5{animation:lanternUp 10.8s linear infinite;filter:drop-shadow(0 11px 22px rgba(0,0,0,0.34));}
+    .lantern{position:absolute;bottom:-30%;width:88px;height:132px;aspect-ratio:2/3;opacity:0;will-change:transform,opacity;transform-origin:center bottom;background-repeat:no-repeat;background-size:contain;background-position:center;pointer-events:none}
+    .lantern.v1{animation:lanternUp 9.6s linear infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.35))} .lantern.v2{animation:lanternUp 11.4s linear infinite} .lantern.v3{animation:lanternUp 10.2s linear infinite} .lantern.v4{animation:lanternUp 12.2s linear infinite} .lantern.v5{animation:lanternUp 10.8s linear infinite}
+    @keyframes lanternUp{0%{transform:translateX(0) translateY(0) rotate(-6deg) scale(var(--s,1));opacity:0}6%{opacity:1}30%{transform:translateX(var(--dx,0px)) translateY(-30vh) rotate(6deg) scale(calc(var(--s,1)*1.03));opacity:0.95}60%{transform:translateX(calc(var(--dx,0px)*1.15)) translateY(-62vh) rotate(-8deg) scale(calc(var(--s,1)*0.98));opacity:0.7;filter:blur(0.6px)}100%{transform:translateX(calc(var(--dx,0px)*1.3)) translateY(-120vh) rotate(-10deg) scale(var(--s,1));opacity:0}}
+    @media (max-width:720px){ .lantern{width:56px;height:84px} } @media (max-width:520px){ .card{height:92vh} }
+    @media (prefers-reduced-motion: reduce){ .lantern{animation:none !important; opacity:1 !important; transform:none !important} }
 
-    @keyframes lanternUp{
-      0%   { transform: translateX(0) translateY(0) rotate(-6deg) scale(var(--s,1)); opacity:0; }
-      6%   { opacity:1; }
-      30%  { transform: translateX(var(--dx, 0px)) translateY(-30vh) rotate(6deg) scale(calc(var(--s,1)*1.03)); opacity:0.95; }
-      60%  { transform: translateX(calc(var(--dx, 0px) * 1.15)) translateY(-62vh) rotate(-8deg) scale(calc(var(--s,1)*0.98)); opacity:0.7; filter:blur(0.6px); }
-      100% { transform: translateX(calc(var(--dx, 0px) * 1.3)) translateY(-120vh) rotate(-10deg) scale(var(--s,1)); opacity:0; }
-    }
-
-    @media (max-width:720px){ .lion{width:160px;bottom:3%} .lantern{width:56px;height:84px} }
-    @media (max-width:520px){ .card{height:92vh} }
-
-    /* reduced motion preference */
-    @media (prefers-reduced-motion: reduce){
-      .lantern{animation:none !important; opacity:1 !important; transform:none !important}
-    }
+    .muted-small{font-size:12px;color:rgba(255,255,255,0.75)}
   </style>
 </head>
 <body>
@@ -190,18 +159,25 @@
   </div>
 
   <div class="card" id="mainCard">
+    
 
-    <!-- Page 1: password -->
+    <!-- Page 1: password with name -->
     <div id="page-password" class="page pw-holo">
       <div class="pw-box">
-        <div class="title">Nhập mật khẩu để bắt đầu</div>
-        <p class="muted" style="color:rgba(255,255,255,0.9)">Nhập mật khẩu đúng.</p>
+        <div class="title">Nhập tên & mật khẩu để bắt đầu</div>
+        <p class="muted" style="color:rgba(255,255,255,0.9)">Vui lòng ghi tên bạn ở ô dưới, sau đó nhập mật khẩu.</p>
+
+        <!-- NEW: name field -->
+        <input id="visitorName" type="text" placeholder="Tên của bạn..." autocomplete="off" />
+
+        <!-- existing password field -->
         <input id="pw" type="password" placeholder="Nhập mật khẩu..." autocomplete="off" />
         <div class="row" style="margin-top:6px;justify-content:center">
           <button id="btnEnter">Bắt đầu</button>
           <button id="btnHint" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)">Gợi ý</button>
         </div>
         <p id="pwMsg" class="muted" style="margin-top:10px;color:rgba(255,255,255,0.85)"></p>
+        
       </div>
     </div>
 
@@ -235,86 +211,191 @@
 
   </div>
 
+  <!-- visitor list modal -->
+  <div id="visitorModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <h3>Danh sách khách đã ghi tên</h3>
+    <div style="overflow:auto;">
+      <table id="visitorTable" role="table" aria-label="Danh sách khách">
+        <thead><tr><th>#</th><th>Tên</th><th>Thời gian</th><th>Kết quả</th><th>Synced</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button id="btnCloseModal" class="small-btn">Đóng</button>
+      <button id="btnClearList" class="small-btn">Xóa danh sách</button>
+      <button id="btnDownloadCsv" class="small-btn">Tải CSV</button>
+    </div>
+    <p style="margin-top:10px;color:rgba(255,255,255,0.75);font-size:13px">Lưu ý: dữ liệu hiện lưu trên trình duyệt (localStorage). Để lưu tập trung, cấu hình REMOTE_ENDPOINT trong mã.</p>
+  </div>
+
   <!-- YouTube IFrame API -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <script>
-    // CONFIG
+    // ---------- CONFIG ----------
     const PASSWORD = '11223344';
     const VIDEO_ID = 'gL5pDe7cqco';
     const NEXT_DELAY_RATIO = 2/3; // show button after 2/3 of video
     const AUTO_RETURN_MS = 30000;
 
-    // SVG lantern data URI (scalable & works offline)
+    // REMOTE: dán URL Web App (Apps Script) của bạn vào REMOTE_ENDPOINT
+    // Bạn đã có Web App URL; nếu muốn gửi lên server, điền URL và điền REMOTE_SECRET giống EXPECTED_SECRET bên Apps Script
+    const REMOTE_ENDPOINT = 'hthttps://script.google.com/macros/s/AKfycbweZpSuita7e-2T4HOrT40l9A0wHGZnF8onM1t_xV0fAhdvyPT3YelweMuv82-ZiOkN/exectps://script.google.com/macros/s/AKfycbyKV3Yvy2_Q3I5ieLRD84iNrbmA3QBlWvQ9phKqfufeYFOwE5EbV5cGtVjSIbcNrQrY/exec';
+    const REMOTE_SECRET   = 's3cR3tXyZ_2025'; // <-- **thay bằng chuỗi bí mật bạn chọn** (phải khớp Apps Script)
+
+    // localStorage key
+    const STORAGE_KEY = 'trungthu_visitors_v1';
+
+    // SVG lantern data URI (shortened body for brevity — full earlier svg also works)
     const LANTERN_SRC = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300">
-  <defs>
-    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
-      <stop offset="0" stop-color="#fff7c6" stop-opacity="0.95"/>
-      <stop offset="0.25" stop-color="#ffd36a"/>
-      <stop offset="0.7" stop-color="#ff8a3d"/>
-      <stop offset="1" stop-color="#d94b2a"/>
-    </linearGradient>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="6" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-
-  <!-- main body -->
-  <g filter="url(#glow)">
-    <ellipse cx="100" cy="120" rx="62" ry="86" fill="url(#g)"/>
-    <path d="M38 120 C38 80, 62 40, 100 40 C138 40, 162 80, 162 120 C162 160, 138 200, 100 200 C62 200, 38 160, 38 120 Z"
-          fill="url(#g)" opacity="0.95"/>
-    <!-- ribs -->
-    <g stroke="#00000022" stroke-width="2" opacity="0.12">
-      <path d="M100 30 L100 210"/>
-      <path d="M78 36 L78 204"/>
-      <path d="M122 36 L122 204"/>
-      <path d="M56 56 L56 184"/>
-      <path d="M144 56 L144 184"/>
-    </g>
-
-    <!-- top cap -->
-    <rect x="80" y="14" width="40" height="12" rx="6" fill="#2f1f12" opacity="0.95"/>
-    <!-- handle -->
-    <path d="M90 14 C86 6, 114 6, 110 14" fill="none" stroke="#2f1f12" stroke-width="4" stroke-linecap="round"/>
-
-    <!-- tassel -->
-    <g transform="translate(100,205)">
-      <rect x="-6" y="0" width="12" height="18" rx="3" fill="#2f1f12" opacity="0.9"/>
-      <path d="M-6 18 C-10 36, -2 48, -2 62" stroke="#2f1f12" stroke-width="2" fill="none"/>
-      <path d="M6 18 C10 36, 2 48, 2 62" stroke="#2f1f12" stroke-width="2" fill="none"/>
-    </g>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 200 300"> ... </svg>
     `);
 
-    // Elements
+    // ---------- Elements ----------
     const rotateOverlay = document.getElementById('rotateOverlay');
     const tryLockBtn = document.getElementById('tryLockBtn');
     const dismissRotate = document.getElementById('dismissRotate');
+
     const pagePw = document.getElementById('page-password');
     const pageVideo = document.getElementById('page-video');
     const pageGreeting = document.getElementById('page-greeting');
+
+    const visitorName = document.getElementById('visitorName');
     const pwInput = document.getElementById('pw');
     const btnEnter = document.getElementById('btnEnter');
     const btnHint = document.getElementById('btnHint');
     const pwMsg = document.getElementById('pwMsg');
+
     const nextBtnContainer = document.getElementById('nextBtnContainer');
     const btnNext = document.getElementById('btnNext');
     const btnBackToPw = document.getElementById('btnBackToPw');
     const mainCard = document.getElementById('mainCard');
 
+    const btnShowList = document.getElementById('btnShowList');
+    const visitorModal = document.getElementById('visitorModal');
+    const visitorTableBody = document.querySelector('#visitorTable tbody');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const btnClearList = document.getElementById('btnClearList');
+    const btnDownloadCsv = document.getElementById('btnDownloadCsv');
+    const btnExportAll = document.getElementById('btnExportAll');
+
+    // YouTube player
     let player = null;
     let checkInterval = null;
     let autoReturnTimeout = null;
 
-    // Orientation helpers
+    // ---------- Visitor storage helpers ----------
+    function loadVisitors(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){ console.warn('loadVisitors err', e); return []; }
+    }
+    function saveVisitors(list){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){ console.warn('saveVisitors err', e); }
+    }
+
+    function renderVisitorTable(){
+      const list = loadVisitors();
+      visitorTableBody.innerHTML = '';
+      if(!list.length){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td'); td.colSpan = 5; td.textContent = 'Danh sách trống'; td.style.color = 'var(--muted)';
+        tr.appendChild(td); visitorTableBody.appendChild(tr);
+        return;
+      }
+      list.forEach((v, idx) => {
+        const tr = document.createElement('tr');
+        const no = document.createElement('td'); no.textContent = (idx+1);
+        const nameTd = document.createElement('td'); nameTd.textContent = v.name;
+        const timeTd = document.createElement('td'); timeTd.textContent = (new Date(v.time)).toLocaleString();
+        const resTd = document.createElement('td'); resTd.textContent = v.result === 'ok' ? 'OK' : (v.result === 'wrong' ? 'Sai mật khẩu' : v.result);
+        const synTd = document.createElement('td'); synTd.textContent = v.synced ? 'OK' : 'Chưa';
+        synTd.className = v.synced ? 'status-ok' : 'status-pending';
+        tr.appendChild(no); tr.appendChild(nameTd); tr.appendChild(timeTd); tr.appendChild(resTd); tr.appendChild(synTd);
+        visitorTableBody.appendChild(tr);
+      });
+    }
+
+    function downloadCSV(){
+      const list = loadVisitors().slice().reverse(); // oldest first
+      if(!list.length){ alert('Danh sách trống'); return; }
+      const rows = [['Tên','Thời gian (ISO)','Kết quả','UserAgent','Synced']];
+      list.forEach(r => rows.push([ `"${r.name.replace(/"/g,'""')}"`, r.time, r.result, `"${(r.ua||'').replace(/"/g,'""')}"`, r.synced ? 'true' : 'false' ]));
+      const csv = rows.map(r => r.join(',')).join('\n');
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'visitors.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    // addVisitor: save local + send remote (with secret), mark synced on success
+    function addVisitor(name, result){
+      const list = loadVisitors();
+      const entry = {
+        name: name || '(không tên)',
+        time: new Date().toISOString(),
+        result,
+        ua: navigator.userAgent || '',
+        synced: false
+      };
+      list.unshift(entry);
+      saveVisitors(list);
+      renderVisitorTable();
+
+      if(REMOTE_ENDPOINT && REMOTE_SECRET && REMOTE_SECRET !== 'REPLACE_WITH_YOUR_SECRET'){
+        const payload = { name: entry.name, result: entry.result, ua: entry.ua, secret: REMOTE_SECRET };
+        fetch(REMOTE_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(async res => {
+          if(!res.ok) throw new Error('HTTP ' + res.status);
+          const j = await res.json().catch(()=>null);
+          if(j && j.status && j.status.toLowerCase() === 'ok'){
+            const cur = loadVisitors();
+            const idx = cur.findIndex(it => it.time === entry.time && it.name === entry.name);
+            if(idx !== -1){ cur[idx].synced = true; saveVisitors(cur); renderVisitorTable(); }
+          } else {
+            console.warn('Remote save responded but not OK', j);
+          }
+        })
+        .catch(err => {
+          console.warn('Remote save failed', err);
+          // keep local entry; will retry on load
+        });
+      }
+    }
+
+    // retry unsynced entries on load (sequential)
+    function retryUnsynced(){
+      const list = loadVisitors();
+      if(!list.length || !REMOTE_ENDPOINT || !REMOTE_SECRET || REMOTE_SECRET === 'REPLACE_WITH_YOUR_SECRET') return;
+      const pending = list.slice().reverse().filter(it => !it.synced);
+      if(!pending.length) return;
+      (async function sendSeq(){
+        for(const e of pending){
+          try{
+            const payload = { name: e.name, result: e.result, ua: e.ua, secret: REMOTE_SECRET };
+            const res = await fetch(REMOTE_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+            if(!res.ok) throw new Error('HTTP '+res.status);
+            const j = await res.json().catch(()=>null);
+            if(j && j.status && j.status.toLowerCase() === 'ok'){
+              const cur = loadVisitors();
+              const idx = cur.findIndex(it => it.time === e.time && it.name === e.name);
+              if(idx !== -1){ cur[idx].synced = true; saveVisitors(cur); }
+            }
+          }catch(err){
+            console.warn('retry failed for', e, err);
+          }
+        }
+        renderVisitorTable();
+      })();
+    }
+
+    // ---------- Orientation helpers ----------
     function checkOrientationAndPrompt(){
       const isPortrait = window.matchMedia('(orientation: portrait)').matches;
       const narrow = window.matchMedia('(max-width:900px)').matches;
-
-      // ONLY show overlay when on Page 1 (pw)
       if(pagePw && !pagePw.classList.contains('hidden')){
         if(isPortrait && narrow){ rotateOverlay.classList.remove('hidden'); } else { rotateOverlay.classList.add('hidden'); }
       } else {
@@ -351,8 +432,7 @@
       try{ player.playVideo(); }catch(e){ console.warn('playVideo failed', e); }
       requestFullscreenFor(mainCard);
       clearInterval(checkInterval);
-      checkInterval = setInterval(()=>{
-        try{
+      checkInterval = setInterval(()=>{ try{
           const dur = player.getDuration();
           const cur = player.getCurrentTime();
           if(dur > 0 && cur/dur >= NEXT_DELAY_RATIO){ showContinueButton(); }
@@ -375,16 +455,6 @@
     }
 
     // Page flow
-    btnEnter.addEventListener('click', ()=>{
-      const val = pwInput.value.trim();
-      if(!val){ pwMsg.textContent='Vui lòng nhập mật khẩu.'; return; }
-      if(val === PASSWORD){
-        checkOrientationAndPrompt();
-        showPage('video');
-        startAndMonitorVideo();
-      } else { pwMsg.textContent='Mật khẩu không đúng — thử lại.'; }
-    });
-
     function showPage(name){
       pagePw.classList.add('hidden'); pageVideo.classList.add('hidden'); pageGreeting.classList.add('hidden');
       if(name==='pw') pagePw.classList.remove('hidden');
@@ -393,29 +463,48 @@
         pageGreeting.classList.remove('hidden');
         prepareGreetingVisuals();
       }
-      // update orientation overlay visibility after page change
       checkOrientationAndPrompt();
     }
 
+    btnEnter.addEventListener('click', ()=>{
+      const nameVal = (visitorName.value || '').trim();
+      const pwVal = (pwInput.value || '').trim();
+      if(!nameVal){ pwMsg.textContent = 'Vui lòng nhập tên của bạn trước.'; visitorName.focus(); return; }
+      if(pwVal === PASSWORD){
+        addVisitor(nameVal, 'ok');
+        pwMsg.textContent = '';
+        showPage('video');
+        startAndMonitorVideo();
+      } else {
+        addVisitor(nameVal, 'wrong');
+        pwMsg.textContent = 'Mật khẩu không đúng — đã ghi nhận tên (nếu bạn muốn thử lại, nhập mật khẩu lại).';
+      }
+      pwInput.value = '';
+    });
+
     btnNext.addEventListener('click', ()=>{ stopAndCleanupVideo(); showGreeting(); });
-    btnBackToPw.addEventListener('click', ()=>{ stopAndCleanupVideo(); showPage('pw'); pwInput.value=''; pwMsg.textContent=''; clearAutoReturn(); });
+    btnBackToPw.addEventListener('click', ()=>{ stopAndCleanupVideo(); showPage('pw'); visitorName.value=''; pwInput.value=''; pwMsg.textContent=''; clearAutoReturn(); });
 
     function showGreeting(){
       showPage('greeting');
       clearAutoReturn();
-      autoReturnTimeout = setTimeout(()=>{ showPage('pw'); pwInput.value=''; pwMsg.textContent=''; }, AUTO_RETURN_MS);
-      let remaining = AUTO_RETURN_MS/1000; const notice = document.getElementById('autoReturnNotice'); if(notice) notice.textContent = `Trang sẽ tự trở về sau ${remaining} giây.`;
-      const countdown = setInterval(()=>{ remaining--; if(remaining<=0){ clearInterval(countdown); if(notice) notice.textContent = 'Đã trở về trang đầu.'; return } if(notice) notice.textContent = `Trang sẽ tự trở về sau ${remaining} giây.`; },1000);
+      autoReturnTimeout = setTimeout(()=>{ showPage('pw'); visitorName.value=''; pwInput.value=''; pwMsg.textContent=''; }, AUTO_RETURN_MS);
     }
     function clearAutoReturn(){ if(autoReturnTimeout) clearTimeout(autoReturnTimeout); }
 
-    // ===== Lanterns & greeting visuals =====
+    // visitor modal
+    btnShowList.addEventListener('click', ()=>{ renderVisitorTable(); visitorModal.classList.add('open'); visitorModal.setAttribute('aria-hidden','false'); });
+    btnCloseModal.addEventListener('click', ()=>{ visitorModal.classList.remove('open'); visitorModal.setAttribute('aria-hidden','true'); });
+    btnClearList.addEventListener('click', ()=>{ if(confirm('Bạn có chắc muốn xóa toàn bộ danh sách khách trên trình duyệt này?')){ localStorage.removeItem(STORAGE_KEY); renderVisitorTable(); alert('Đã xóa danh sách (local).'); }});
+    btnDownloadCsv.addEventListener('click', downloadCSV);
+    btnExportAll.addEventListener('click', downloadCSV);
+
+    // lanterns visuals
     async function createLanterns(count = 7){
       const container = document.getElementById('lanterns');
       if(!container) return;
       container.innerHTML = '';
       const src = LANTERN_SRC;
-      console.log('Creating', count, 'lanterns, using src=', src);
       for (let i=0;i<count;i++){
         const el = document.createElement('div');
         el.className = 'lantern v' + ((i%5)+1);
@@ -427,23 +516,11 @@
         el.style.setProperty('--s', s);
         el.style.animationDelay = (Math.random()*-10).toFixed(2) + 's';
         el.style.backgroundImage = `url("${src}")`;
-        // debug outline: uncomment to see box while testing
-        // el.style.outline = '1px dashed rgba(255,255,255,0.12)';
         container.appendChild(el);
       }
     }
     function ensureLanternsCreated(){ if(document.getElementById('lanterns') && !document.getElementById('lanterns').children.length) createLanterns(8); }
-
-    function prepareGreetingVisuals(){
-      ensureLanternsCreated();
-      // small glow pulse for lanterns
-      const lanterns = document.querySelectorAll('.lantern');
-      lanterns.forEach((l,idx)=>{
-        l.style.transition = 'filter 0.6s ease';
-        setTimeout(()=> l.style.filter = 'drop-shadow(0 16px 36px rgba(255,160,50,0.35))', 300 + idx*80);
-        setTimeout(()=> l.style.filter = '', 2600 + idx*40);
-      });
-    }
+    function prepareGreetingVisuals(){ ensureLanternsCreated(); const lanterns = document.querySelectorAll('.lantern'); lanterns.forEach((l,idx)=>{ l.style.transition = 'filter 0.6s ease'; setTimeout(()=> l.style.filter = 'drop-shadow(0 16px 36px rgba(255,160,50,0.35))', 300 + idx*80); setTimeout(()=> l.style.filter = '', 2600 + idx*40); }); }
 
     // init
     checkOrientationAndPrompt();
@@ -451,8 +528,15 @@
     window.addEventListener('orientationchange', checkOrientationAndPrompt);
     window.addEventListener('resize', checkOrientationAndPrompt);
 
+    // render & retry on load
+    renderVisitorTable();
+    retryUnsynced();
+
     // show first page
     showPage('pw');
+
+    // focus first input
+    visitorName.focus();
   </script>
 </body>
 </html>
